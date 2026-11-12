@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#087f75">
+<title>MY HEALTH JOURNAL V3</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--teal:#087f75;--mint:#e8f6f3;--ink:#19312f;--muted:#71827f;--line:#e3ece9;--bg:#f5f8f7;--red:#c34b4b;--amber:#a56a12}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:94px}
+header{background:linear-gradient(135deg,#087f75,#14a18f);color:white;padding:21px 18px 24px;border-radius:0 0 24px 24px}
+header .eyebrow{font-size:10px;letter-spacing:2px;opacity:.85}header h1{font-size:23px;margin:5px 0}header p{font-size:12px;margin:0;opacity:.9}
+main{max-width:820px;margin:auto;padding:15px}.page{display:none}.page.active{display:block}
+.section-title{font-size:17px;margin:8px 0 12px}.muted{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 3px 12px #163d3510;margin-bottom:11px}
+.metric{font-size:22px;font-weight:750;margin:6px 0 2px}.metric small{font-size:12px;font-weight:500;color:var(--muted)}
+.card-label{font-size:12px;color:var(--muted)}button{border:0;border-radius:11px;padding:10px 13px;background:var(--teal);color:white;font-weight:650;font-size:13px;cursor:pointer}
+button.secondary{background:var(--mint);color:var(--teal)}button.danger{background:#fff0f0;color:var(--red)}button.ghost{background:#f1f5f4;color:#425b56}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:7px 2px calc(7px + env(safe-area-inset-bottom));z-index:10}
+.tabs button{background:transparent;color:#7a8986;padding:5px 2px;min-width:47px;font-size:9px;font-weight:550}.tabs button span{display:block;font-size:18px;margin-bottom:2px}.tabs button.active{color:var(--teal)}
+form{display:grid;grid-template-columns:1fr 1fr;gap:10px}label{font-size:12px;color:var(--muted);display:block}input,select,textarea{width:100%;margin-top:5px;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;color:var(--ink);font:inherit;font-size:14px}textarea{min-height:68px;grid-column:1/-1}form .full{grid-column:1/-1}form button{grid-column:1/-1}
+.item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.item strong{font-size:13px}.item small{display:block;color:var(--muted);font-size:11px;margin-top:3px;line-height:1.5}
+.pill{font-size:10px;background:var(--mint);color:var(--teal);padding:5px 8px;border-radius:20px;white-space:nowrap}.pill.amber{background:#fff4df;color:var(--amber)}
+canvas{width:100%;height:180px;display:block}.empty{text-align:center;padding:22px;color:var(--muted);font-size:13px}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.note{background:#fff8e8;border:1px solid #f1e2bb;color:#775d27;border-radius:12px;padding:11px;font-size:11px;line-height:1.55;margin:10px 0}
+.subnav{display:flex;gap:7px;overflow:auto;margin:8px 0 12px}.subnav button{white-space:nowrap}.subnav button.active{background:var(--teal);color:white}.subnav button:not(.active){background:#eaf1ef;color:#49615c}
+.inline-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.inline-actions button{font-size:11px;padding:7px 9px}
+.calendar-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.day,.dow{text-align:center;padding:8px 1px;font-size:11px;border-radius:9px}.dow{color:var(--muted);font-weight:700}.day{background:#f5f8f7;min-height:38px;position:relative}.day.has{background:#e1f4ef;color:var(--teal);font-weight:750}.day.selected{outline:2px solid var(--teal)}.day .dot{width:5px;height:5px;background:var(--teal);border-radius:50%;position:absolute;bottom:4px;left:calc(50% - 2px)}
+@media(min-width:620px){main{padding:22px}.grid{grid-template-columns:repeat(3,1fr)}}
+@media print{body{background:white;padding:0}header,.tabs,.no-print,button{display:none!important}main{max-width:none;padding:0}.page{display:none!important}#reportPrint{display:block!important}.card{box-shadow:none;break-inside:avoid}.report-title{display:block!important}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">PERSONAL WELLNESS TRACKER</div><h1>MY HEALTH JOURNAL</h1><p>สมุดบันทึกสุขภาพและการใช้ยา • V3</p></header>
+<main>
+<section id="dashboard" class="page active">
+<h2 class="section-title">ภาพรวมสุขภาพ</h2><div class="grid" id="metrics"></div>
+<div class="card"><b>แนวโน้มสุขภาพ</b><p class="muted">เลือกดูข้อมูลย้อนหลัง</p><select id="chartMetric"><option value="weight">น้ำหนัก (กก.)</option><option value="glucose">น้ำตาล (mg/dL)</option><option value="systolic">ความดันตัวบน (mmHg)</option><option value="ldl">LDL (mg/dL)</option></select><canvas id="trend" width="700" height="220"></canvas></div>
+<div class="card"><b>การทานยาวันนี้</b><div id="todayMeds" class="muted" style="margin-top:8px"></div></div>
+<div class="card"><b>นัดหมายครั้งถัดไป</b><div id="nextAppointment" class="muted" style="margin-top:8px"></div></div>
+<div class="card"><b>ค่าใช้จ่ายสะสม</b><div class="metric" id="totalExpense">฿0</div><div class="muted">รวมรายการค่าใช้จ่ายที่บันทึกไว้</div></div>
+</section>
+
+<section id="health" class="page">
+<h2 class="section-title">บันทึกสุขภาพ</h2><div class="card"><form id="healthForm">
+<label>วันที่<input name="date" type="date" required></label><label>น้ำหนัก (กก.)<input name="weight" type="number" step=".1"></label>
+<label>น้ำตาล (mg/dL)<input name="glucose" type="number" step=".1"></label><label>HbA1c (%)<input name="hba1c" type="number" step=".1"></label>
+<label>Cholesterol<input name="cholesterol" type="number"></label><label>HDL<input name="hdl" type="number"></label><label>LDL<input name="ldl" type="number"></label><label>Triglyceride<input name="triglyceride" type="number"></label>
+<label>ความดันตัวบน<input name="systolic" type="number"></label><label>ความดันตัวล่าง<input name="diastolic" type="number"></label><label>ชีพจร<input name="pulse" type="number"></label><label>ค่าอื่น ๆ<input name="other"></label><textarea name="note" placeholder="หมายเหตุ"></textarea><button>บันทึกข้อมูลสุขภาพ</button></form></div>
+<h3 class="section-title">ประวัติการบันทึก</h3><div class="card" id="healthList"></div>
+</section>
+
+<section id="medications" class="page">
+<h2 class="section-title">ยาและการแจ้งเตือน</h2>
+<div class="note">ระบบแจ้งเตือนจะทำงานเมื่อเปิดหน้าแอปอยู่และอนุญาตการแจ้งเตือนแล้วเท่านั้น ไม่สามารถรับประกันการเตือนเมื่อปิด Safari หรือระบบปฏิบัติการพักแอปได้ โปรดใช้การตั้งเตือนใน iPhone ควบคู่ด้วย</div>
+<div class="top-actions no-print"><button id="enableNotify">เปิดสิทธิ์แจ้งเตือน</button><button class="secondary" id="testNotify">ทดสอบแจ้งเตือน</button></div>
+<div class="subnav"><button class="active" data-medtab="list">รายการยา</button><button data-medtab="log">ประวัติทานยา</button><button data-medtab="calendar">ปฏิทินยา</button></div>
+<div id="medListPane">
+<div class="card"><form id="medForm">
+<label class="full">ชื่อยา<input name="name" required placeholder="ชื่อยา / ชื่อการค้า"></label>
+<label>กลุ่มยา<select name="category"><option value="diabetes">ยาเบาหวาน</option><option value="lipid">ยาลดไขมัน</option><option value="pressure">ยาความดัน</option><option value="other">ยาอื่น ๆ</option></select></label>
+<label>ขนาด/วิธีใช้ตามแพทย์สั่ง<input name="dose" placeholder="เช่น 1 เม็ด"></label>
+<label>ความถี่<select name="frequency"><option>วันละครั้ง</option><option>วันละ 2 ครั้ง</option><option>วันละ 3 ครั้ง</option><option>ก่อนอาหาร</option><option>หลังอาหาร</option><option>ก่อนนอน</option><option>ตามแพทย์สั่ง</option><option>เมื่อมีอาการ</option></select></label>
+<label>เวลาแจ้งเตือน<input name="times" placeholder="เช่น 08:00, 20:00"></label>
+<label class="full">หมายเหตุ<input name="note" placeholder="เช่น หลังอาหารเช้า"></label>
+<label class="full"><span><input name="reminder" type="checkbox" value="yes" style="width:auto"> เปิดการแจ้งเตือนในแอป</span></label><button>เพิ่มรายการยา</button></form></div>
+<div class="card"><b>รายการยาปัจจุบัน</b><div id="medList"></div></div></div>
+<div id="medLogPane" style="display:none"><div class="card"><b>บันทึกการทานยา</b><form id="doseForm"><label class="full">เลือกยา<select name="medId" id="medSelect" required></select></label><label>วันที่<input name="date" type="date" required></label><label>เวลาที่ทาน<input name="time" type="time"></label><label class="full">หมายเหตุ<input name="note"></label><button>บันทึกว่าทานยาแล้ว</button></form></div><div class="card"><b>ประวัติการทานยา</b><div id="medHistory"></div></div></div>
+<div id="medCalendarPane" style="display:none"><div class="card"><div class="calendar-head"><button class="ghost" id="prevMonth">‹</button><b id="monthLabel"></b><button class="ghost" id="nextMonth">›</button></div><div id="calendar" class="calendar-grid"></div><p class="muted">วันที่มีจุดสีเขียวคือวันที่มีบันทึกการทานยา</p></div><div class="card"><b id="selectedDateLabel">รายการของวันที่เลือก</b><div id="selectedDayLogs"></div></div></div>
+</section>
+
+<section id="appointments" class="page"><h2 class="section-title">ตารางนัดหมาย</h2><div class="card"><form id="appointmentForm"><label>วันที่นัด<input name="date" type="date" required></label><label>เวลา<input name="time" type="time"></label><label>แพทย์<input name="doctor"></label><label>โรงพยาบาล<input name="hospital"></label><label class="full">รายละเอียด<input name="detail"></label><button>เพิ่มนัดหมาย</button></form></div><div class="card" id="appointmentList"></div></section>
+
+<section id="expenses" class="page"><h2 class="section-title">ค่าใช้จ่ายสุขภาพ</h2><div class="card"><form id="expenseForm"><label>วันที่<input name="date" type="date" required></label><label>จำนวนเงิน (บาท)<input name="amount" type="number" min="0" step=".01" required></label><label>หมวดหมู่<select name="category"><option>ค่ายา</option><option>ค่าตรวจ</option><option>ค่ารักษา</option><option>ค่าปรึกษาแพทย์</option><option>อื่น ๆ</option></select></label><label>รายละเอียด<input name="detail"></label><button>บันทึกค่าใช้จ่าย</button></form></div><div class="card"><b>รายการค่าใช้จ่าย</b><div id="expenseList"></div></div></section>
+
+<section id="reports" class="page"><h2 class="section-title">รายงานสุขภาพสำหรับพบแพทย์</h2><div class="card"><p class="muted">สร้างรายงานสรุปข้อมูลสุขภาพ ยาที่ใช้อยู่ ประวัติการทานยา นัดหมาย และค่าใช้จ่ายตามช่วงวันที่ แล้วใช้เมนูพิมพ์ของ iPhone เพื่อบันทึกเป็น PDF</p><form id="reportForm"><label>ตั้งแต่วันที่<input name="from" type="date"></label><label>ถึงวันที่<input name="to" type="date"></label><button>สร้างตัวอย่างรายงาน</button></form><div class="top-actions"><button id="printReport">พิมพ์ / บันทึกเป็น PDF</button></div></div><div id="reportPreview" class="card"><div class="empty">เลือกช่วงวันที่แล้วกด “สร้างตัวอย่างรายงาน”</div></div></section>
+
+<section id="settings" class="page"><h2 class="section-title">ตั้งค่าและสำรองข้อมูล</h2>
+<div class="card"><form id="profileForm"><label>ชื่อที่ใช้เรียก<input name="name"></label><label>วันเกิด<input name="birth" type="date"></label><label>ส่วนสูง (ซม.)<input name="height" type="number" step=".1"></label><label>น้ำหนักปัจจุบัน (กก.)<input name="weight" type="number" step=".1"></label><button>บันทึกข้อมูลส่วนตัว</button></form><p class="muted">วันเกิดเก็บไว้ในอุปกรณ์และไม่แสดงบน Dashboard</p></div>
+<div class="card"><b>สำรองและกู้คืนข้อมูล</b><div class="top-actions"><button id="exportBtn">ส่งออกข้อมูล</button><button class="secondary" id="importBtn">นำเข้าข้อมูล</button><input id="importFile" type="file" accept="application/json" hidden></div></div>
+<div class="card"><b>ความเป็นส่วนตัว</b><p class="muted">ข้อมูลเก็บใน Local Storage ของ Safari บนอุปกรณ์นี้ ไม่มีการส่งข้อมูลสุขภาพไปยังเซิร์ฟเวอร์</p><button class="danger" id="clearBtn">ลบข้อมูลทั้งหมด</button></div>
+<div class="note">ข้อมูลเป็นสมุดบันทึก ไม่ใช่การวินิจฉัยโรคหรือคำสั่งใช้ยา ควรยึดตามแพทย์/เภสัชกร และสำรองข้อมูลเป็นประจำ</div></section>
+
+<section id="reportPrint" class="page"><h2 class="report-title">รายงานสุขภาพ MY HEALTH JOURNAL</h2><div id="printContent"></div></section>
+</main>
+<nav class="tabs">
+<button class="active" data-page="dashboard"><span>⌂</span>ภาพรวม</button><button data-page="health"><span>♥</span>สุขภาพ</button><button data-page="medications"><span>✚</span>ยา</button><button data-page="appointments"><span>▣</span>นัดหมาย</button><button data-page="expenses"><span>฿</span>ค่าใช้จ่าย</button><button data-page="reports"><span>▤</span>รายงาน</button><button data-page="settings"><span>⚙</span>ตั้งค่า</button>
+</nav>
+<script>
+const KEY='myHealthJournal_v3';
+const blank={profile:{},health:[],appointments:[],expenses:[],medications:[],doseLogs:[]};
+let db=load(),calDate=new Date(),selectedDate=localDate();
+function load(){try{let d=JSON.parse(localStorage.getItem(KEY)||'{}');return {...blank,...d,medications:d.medications||[],doseLogs:d.doseLogs||[]}}catch(e){return JSON.parse(JSON.stringify(blank))}}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function money(n){return '฿'+Number(n||0).toLocaleString('th-TH',{maximumFractionDigits:2})}
+function localDate(d=new Date()){return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+function formObj(f){return Object.fromEntries(new FormData(f).entries())}
+function clean(o){Object.keys(o).forEach(k=>{if(o[k]==='')delete o[k];else if(['weight','glucose','hba1c','cholesterol','hdl','ldl','triglyceride','systolic','diastolic','pulse','amount','height'].includes(k))o[k]=Number(o[k])});return o}
+const cat={diabetes:'ยาเบาหวาน',lipid:'ยาลดไขมัน',pressure:'ยาความดัน',other:'ยาอื่น ๆ'};
+function switchPage(id){document.querySelectorAll('.tabs button,.page').forEach(x=>x.classList.remove('active'));document.querySelector(`.tabs button[data-page="${id}"]`)?.classList.add('active');document.getElementById(id).classList.add('active')}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>switchPage(b.dataset.page));
+document.querySelectorAll('form input[type=date]').forEach(x=>{if(!x.value)x.value=localDate()});
+document.getElementById('healthForm').onsubmit=e=>{e.preventDefault();db.health.unshift({...clean(formObj(e.target)),id:Date.now()});e.target.reset();e.target.elements.date.value=localDate();save()};
+document.getElementById('appointmentForm').onsubmit=e=>{e.preventDefault();db.appointments.push({...formObj(e.target),id:Date.now()});e.target.reset();e.target.elements.date.value=localDate();save()};
+document.getElementById('expenseForm').onsubmit=e=>{e.preventDefault();db.expenses.unshift({...clean(formObj(e.target)),id:Date.now()});e.target.reset();e.target.elements.date.value=localDate();save()};
+document.getElementById('profileForm').onsubmit=e=>{e.preventDefault();db.profile=clean(formObj(e.target));save();alert('บันทึกข้อมูลส่วนตัวแล้ว')};
+document.getElementById('medForm').onsubmit=e=>{e.preventDefault();let d=formObj(e.target);d.reminder=e.target.elements.reminder.checked;db.medications.push({...d,id:Date.now(),active:true});e.target.reset();save();alert('เพิ่มรายการยาแล้ว')};
+document.getElementById('doseForm').onsubmit=e=>{e.preventDefault();db.doseLogs.unshift({...formObj(e.target),id:Date.now()});e.target.reset();e.target.elements.date.value=localDate();save();alert('บันทึกการทานยาแล้ว')};
+document.querySelectorAll('[data-medtab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-medtab]').forEach(x=>x.classList.toggle('active',x===b));['list','log','calendar'].forEach(k=>document.getElementById(k==='list'?'medListPane':k==='log'?'medLogPane':'medCalendarPane').style.display=b.dataset.medtab===k?'block':'none');if(b.dataset.medtab==='calendar')renderCalendar()});
+function del(type,id){if(confirm('ยืนยันลบรายการนี้?')){db[type]=db[type].filter(x=>x.id!==id);save()}}
+function medDelete(id){if(confirm('ลบรายการยานี้? ประวัติการทานยาจะยังคงอยู่')){db.medications=db.medications.filter(x=>x.id!==id);save()}}
+function row(title,sub,right){return `<div class="item"><div><strong>${title}</strong><small>${sub}</small></div><div style="text-align:right">${right||''}</div></div>`}
+function render(){
+const l=db.health[0]||{},cards=[['น้ำหนัก',l.weight,'กก.'],['น้ำตาล',l.glucose,'mg/dL'],['HbA1c',l.hba1c,'%'],['ความดัน',l.systolic&&l.diastolic?l.systolic+'/'+l.diastolic:null,'mmHg'],['ชีพจร',l.pulse,'ครั้ง/นาที'],['LDL',l.ldl,'mg/dL']];
+document.getElementById('metrics').innerHTML=cards.map(c=>`<div class="card"><div class="card-label">${c[0]}</div><div class="metric">${c[1]??'—'} <small>${c[1]!=null?c[2]:''}</small></div><div class="muted">${l.date?'บันทึกล่าสุด '+esc(l.date):'ยังไม่มีข้อมูล'}</div></div>`).join('');
+document.getElementById('totalExpense').textContent=money(db.expenses.reduce((s,x)=>s+Number(x.amount||0),0));
+let ap=db.appointments.filter(x=>x.date>=localDate()).sort((a,b)=>a.date.localeCompare(b.date))[0];document.getElementById('nextAppointment').innerHTML=ap?`<b>${esc(ap.date)} ${esc(ap.time||'')}</b><br>${esc(ap.doctor||'ไม่ระบุแพทย์')} • ${esc(ap.hospital||'ไม่ระบุโรงพยาบาล')}<br>${esc(ap.detail||'')}`:'ยังไม่มีนัดหมายในอนาคต';
+let logs=db.doseLogs.filter(x=>x.date===localDate());document.getElementById('todayMeds').innerHTML=logs.length?logs.map(x=>{let m=db.medications.find(y=>String(y.id)===String(x.medId));return row(esc(m?.name||'ยาที่ถูกลบ'),esc(x.time||'ไม่ระบุเวลา')+' • '+esc(cat[m?.category]||''),'<span class="pill">บันทึกแล้ว</span>')}).join(''):'ยังไม่มีบันทึกการทานยาวันนี้';
+document.getElementById('healthList').innerHTML=db.health.length?db.health.map(x=>row(esc(x.date),`น้ำหนัก ${x.weight??'—'} • น้ำตาล ${x.glucose??'—'} • BP ${x.systolic??'—'}/${x.diastolic??'—'}`,`<button class="danger" onclick="del('health',${x.id})">ลบ</button>`)).join(''):'<div class="empty">ยังไม่มีข้อมูลสุขภาพ</div>';
+document.getElementById('appointmentList').innerHTML=db.appointments.length?db.appointments.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(x=>row(esc(x.date),`${esc(x.time||'')} ${esc(x.doctor||'')} • ${esc(x.hospital||'')}<br>${esc(x.detail||'')}`,`<button class="danger" onclick="del('appointments',${x.id})">ลบ</button>`)).join(''):'<div class="empty">ยังไม่มีนัดหมาย</div>';
+document.getElementById('expenseList').innerHTML=db.expenses.length?db.expenses.map(x=>row(esc(x.category),`${money(x.amount)} • ${esc(x.date)} • ${esc(x.detail||'')}`,`<b>${money(x.amount)}</b><br><button class="danger" onclick="del('expenses',${x.id})">ลบ</button>`)).join(''):'<div class="empty">ยังไม่มีค่าใช้จ่าย</div>';
+document.getElementById('medList').innerHTML=db.medications.length?db.medications.map(m=>row(esc(m.name),`<span class="pill">${cat[m.category]||'ยาอื่น ๆ'}</span><br>ขนาด ${esc(m.dose||'ไม่ระบุ')} • ${esc(m.frequency||'')}<br>เวลา ${esc(m.times||'ไม่ระบุ')}${m.reminder?' • <span class="pill amber">เปิดเตือน</span>':''}`,`<button class="danger" onclick="medDelete(${m.id})">ลบ</button>`)).join(''):'<div class="empty">ยังไม่มีรายการยา</div>';
+let active=db.medications.filter(m=>m.active!==false);document.getElementById('medSelect').innerHTML=active.length?active.map(m=>`<option value="${m.id}">${esc(m.name)} — ${cat[m.category]||'ยาอื่น ๆ'}</option>`).join(''):'<option value="">กรุณาเพิ่มรายการยาก่อน</option>';
+document.getElementById('medHistory').innerHTML=db.doseLogs.length?db.doseLogs.map(x=>{let m=db.medications.find(y=>String(y.id)===String(x.medId));return row(esc(m?.name||'ยาที่ถูกลบ'),`${esc(x.date)} ${esc(x.time||'')} • ${esc(cat[m?.category]||'ยาอื่น ๆ')} ${esc(x.note||'')}`,`<button class="danger" onclick="del('doseLogs',${x.id})">ลบ</button>`)}).join(''):'<div class="empty">ยังไม่มีประวัติ</div>';
+let p=document.getElementById('profileForm');Object.entries(db.profile).forEach(([k,v])=>{if(p.elements[k])p.elements[k].value=v});drawChart();
+}
+function drawChart(){let c=document.getElementById('trend'),ctx=c.getContext('2d'),key=document.getElementById('chartMetric').value;ctx.clearRect(0,0,c.width,c.height);let a=db.health.filter(x=>x[key]!=null).slice().reverse();if(!a.length){ctx.fillStyle='#71827f';ctx.font='16px sans-serif';ctx.fillText('ยังไม่มีข้อมูลสำหรับแสดงกราฟ',190,110);return}let v=a.map(x=>+x[key]),mn=Math.min(...v),mx=Math.max(...v);if(mn===mx){mn--;mx++}let pts=v.map((n,i)=>({x:35+i*(c.width-70)/Math.max(1,v.length-1),y:c.height-35-(n-mn)/(mx-mn)*(c.height-75)}));ctx.strokeStyle='#dbe9e5';for(let i=0;i<4;i++){let y=20+i*(c.height-55)/3;ctx.beginPath();ctx.moveTo(25,y);ctx.lineTo(c.width-15,y);ctx.stroke()}ctx.strokeStyle='#087f75';ctx.lineWidth=4;ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();pts.forEach((p,i)=>{ctx.fillStyle='#087f75';ctx.beginPath();ctx.arc(p.x,p.y,5,0,7);ctx.fill();ctx.fillStyle='#526662';ctx.font='12px sans-serif';ctx.fillText(v[i],p.x-10,p.y-12)})}
+document.getElementById('chartMetric').onchange=drawChart;
+function renderCalendar(){let y=calDate.getFullYear(),m=calDate.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();document.getElementById('monthLabel').textContent=new Intl.DateTimeFormat('th-TH',{month:'long',year:'numeric'}).format(calDate);let html=['อา','จ','อ','พ','พฤ','ศ','ส'].map(x=>`<div class="dow">${x}</div>`).join('');for(let i=0;i<first;i++)html+='<div></div>';for(let d=1;d<=days;d++){let date=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,has=db.doseLogs.some(x=>x.date===date);html+=`<div class="day ${has?'has':''} ${selectedDate===date?'selected':''}" data-date="${date}">${d}${has?'<i class="dot"></i>':''}</div>`}document.getElementById('calendar').innerHTML=html;document.querySelectorAll('.day[data-date]').forEach(el=>el.onclick=()=>{selectedDate=el.dataset.date;renderCalendar()});document.getElementById('selectedDateLabel').textContent='ประวัติวันที่ '+selectedDate;let day=db.doseLogs.filter(x=>x.date===selectedDate);document.getElementById('selectedDayLogs').innerHTML=day.length?day.map(x=>{let med=db.medications.find(m=>String(m.id)===String(x.medId));return row(esc(med?.name||'ยาที่ถูกลบ'),esc(x.time||'ไม่ระบุเวลา')+' • '+esc(x.note||''),'<span class="pill">ทานแล้ว</span>')}).join(''):'<div class="empty">ไม่มีบันทึกการทานยาในวันนี้</div>'}
+document.getElementById('prevMonth').onclick=()=>{calDate.setMonth(calDate.getMonth()-1);renderCalendar()};document.getElementById('nextMonth').onclick=()=>{calDate.setMonth(calDate.getMonth()+1);renderCalendar()};
+function notify(title,body){if('Notification'in window&&Notification.permission==='granted'){try{new Notification(title,{body})}catch(e){}}}
+document.getElementById('enableNotify').onclick=async()=>{if(!('Notification'in window)){alert('เบราว์เซอร์นี้ไม่รองรับ Notification');return}let p=await Notification.requestPermission();alert(p==='granted'?'เปิดสิทธิ์แจ้งเตือนแล้ว':'ยังไม่ได้รับสิทธิ์แจ้งเตือน')};
+document.getElementById('testNotify').onclick=()=>{if(!('Notification'in window)||Notification.permission!=='granted'){alert('กรุณาเปิดสิทธิ์แจ้งเตือนก่อน');return}notify('MY HEALTH JOURNAL','นี่คือการทดสอบแจ้งเตือน');};
+function checkReminders(){if(!('Notification'in window)||Notification.permission!=='granted')return;let now=new Date(),date=localDate(now),time=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');db.medications.filter(m=>m.reminder&&m.active!==false).forEach(m=>(m.times||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(t=>{if(t===time){let key='mhj_rem_'+m.id+'_'+date+'_'+time;if(!localStorage.getItem(key)){notify('ถึงเวลาทานยา',`${m.name} • ${m.dose||'ตามแพทย์สั่ง'}`);localStorage.setItem(key,'1')}}}))}
+document.getElementById('exportBtn').onclick=()=>{let b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='my-health-journal-v3-'+localDate()+'.json';a.click();URL.revokeObjectURL(a.href)};
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text());if(!d||!Array.isArray(d.health)||!Array.isArray(d.appointments)||!Array.isArray(d.expenses))throw Error();if(confirm('นำเข้าข้อมูลและแทนที่ข้อมูลปัจจุบัน?')){db={...blank,...d,medications:d.medications||[],doseLogs:d.doseLogs||[]};save();alert('นำเข้าข้อมูลสำเร็จ')}}catch(err){alert('ไฟล์สำรองไม่ถูกต้อง')}e.target.value=''};
+document.getElementById('clearBtn').onclick=()=>{if(confirm('ลบข้อมูลทั้งหมดจากอุปกรณ์นี้?')){db=JSON.parse(JSON.stringify(blank));save()}};
+document.getElementById('reportForm').onsubmit=e=>{e.preventDefault();buildReport(formObj(e.target))};
+function buildReport(range){let from=range.from||'0000-01-01',to=range.to||'9999-12-31',within=x=>x>=from&&x<=to;let hs=db.health.filter(x=>within(x.date)),dl=db.doseLogs.filter(x=>within(x.date)),aps=db.appointments.filter(x=>within(x.date)),ex=db.expenses.filter(x=>within(x.date));let hrows=hs.map(x=>`<tr><td>${esc(x.date)}</td><td>${x.weight??'—'}</td><td>${x.glucose??'—'}</td><td>${x.hba1c??'—'}</td><td>${x.systolic??'—'}/${x.diastolic??'—'}</td><td>${x.ldl??'—'}</td></tr>`).join('');let meds=db.medications.map(x=>`<li>${esc(x.name)} — ${esc(cat[x.category]||'ยาอื่น ๆ')} — ${esc(x.dose||'ไม่ระบุ')} — ${esc(x.frequency||'')} — เวลา ${esc(x.times||'ไม่ระบุ')}</li>`).join('');let doseRows=dl.map(x=>{let m=db.medications.find(y=>String(y.id)===String(x.medId));return `<tr><td>${esc(x.date)}</td><td>${esc(x.time||'')}</td><td>${esc(m?.name||'ยา')}</td><td>${esc(x.note||'')}</td></tr>`}).join('');let apRows=aps.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.time||'')}</td><td>${esc(x.doctor||'')}</td><td>${esc(x.hospital||'')}</td><td>${esc(x.detail||'')}</td></tr>`).join('');let total=ex.reduce((s,x)=>s+Number(x.amount||0),0);let name=esc(db.profile.name||'ไม่ระบุ');let html=`<h2>รายงานสุขภาพ MY HEALTH JOURNAL</h2><p>ชื่อ: ${name}　ช่วงวันที่: ${esc(range.from||'ทั้งหมด')} ถึง ${esc(range.to||'ทั้งหมด')}</p><h3>1. ผลตรวจสุขภาพ</h3><table border="1" cellspacing="0" cellpadding="5" width="100%"><tr><th>วันที่</th><th>น้ำหนัก</th><th>น้ำตาล</th><th>HbA1c</th><th>ความดัน</th><th>LDL</th></tr>${hrows||'<tr><td colspan="6">ไม่มีข้อมูล</td></tr>'}</table><h3>2. รายการยาปัจจุบัน</h3><ul>${meds||'<li>ไม่มีข้อมูล</li>'}</ul><h3>3. ประวัติการทานยา</h3><table border="1" cellspacing="0" cellpadding="5" width="100%"><tr><th>วันที่</th><th>เวลา</th><th>ยา</th><th>หมายเหตุ</th></tr>${doseRows||'<tr><td colspan="4">ไม่มีข้อมูล</td></tr>'}</table><h3>4. นัดหมาย</h3><table border="1" cellspacing="0" cellpadding="5" width="100%"><tr><th>วันที่</th><th>เวลา</th><th>แพทย์</th><th>โรงพยาบาล</th><th>รายละเอียด</th></tr>${apRows||'<tr><td colspan="5">ไม่มีข้อมูล</td></tr>'}</table><h3>5. ค่าใช้จ่าย</h3><p>ยอดรวมในช่วงที่เลือก: ${money(total)}</p><ul>${ex.map(x=>`<li>${esc(x.date)} — ${esc(x.category)} — ${money(x.amount)} ${esc(x.detail||'')}</li>`).join('')||'<li>ไม่มีข้อมูล</li>'}</ul><p><small>รายงานนี้จัดทำจากข้อมูลที่ผู้ใช้บันทึก ไม่ใช่เอกสารวินิจฉัยทางการแพทย์ โปรดให้แพทย์ตรวจสอบข้อมูล</small></p>`;document.getElementById('reportPreview').innerHTML=html;document.getElementById('printContent').innerHTML=html}
+document.getElementById('printReport').onclick=()=>{if(!document.getElementById('printContent').innerHTML){alert('กรุณาสร้างตัวอย่างรายงานก่อน');return}document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById('reportPrint').classList.add('active');window.print();document.getElementById('reportPrint').classList.remove('active');document.getElementById('reports').classList.add('active')};
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+render();checkReminders();setInterval(checkReminders,30000);
+</script>
+</body></html>

@@ -1,0 +1,9 @@
+{
+  "name": "MY HEALTH JOURNAL",
+  "short_name": "Health Journal",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f8f7",
+  "theme_color": "#087f75",
+  "icons": []
+}
